@@ -54,3 +54,37 @@ def test_lru_recency_chain_eviction():
     misses: 1,2,3,4,3 = 5
     """
     assert simulate_lru(3, [1, 2, 3, 1, 2, 4, 3]) == 5
+
+# --- OPT (Belady / farthest-in-future) specific ---
+
+def test_optff_k1_equivalent_to_fifo_lru():
+    """With k=1, all policies behave the same (only last requested can be cached)."""
+    req = [1, 2, 1, 2, 3, 2]
+    assert simulate_optff(1, req) == simulate_fifo(1, req)
+    assert simulate_optff(1, req) == simulate_lru(1, req)
+
+def test_optff_evict_never_used_again():
+    """
+    k=2, requests: 1 2 3 1 2
+    After 1,2 cached; request 3 => must evict either 1 or 2.
+    Optimal evicts 2 (used at end) or 1 depending on future:
+      future after inserting 3: sequence is 1,2.
+      So evict 2? Actually 1 is used sooner than 2, so evict 2 (farthest).
+    misses: 1,2,3 = 3
+    """
+    assert simulate_optff(2, [1, 2, 3, 1, 2]) == 3
+
+def test_optff_strictly_better_than_fifo_on_classic_sequence():
+    """
+    Classic where OPT beats FIFO with k=3 (often used in paging examples).
+    Just assert it's strictly better (fewer misses), not exact count.
+    """
+    req = [1, 2, 3, 4, 1, 2, 5, 1, 2, 3, 4, 5]
+    k = 3
+    assert simulate_optff(k, req) < simulate_fifo(k, req)
+
+def test_optff_strictly_better_than_lru_on_classic_sequence():
+    """Same sequence: OPT should beat LRU as well."""
+    req = [1, 2, 3, 4, 1, 2, 5, 1, 2, 3, 4, 5]
+    k = 3
+    assert simulate_optff(k, req) < simulate_lru(k, req)
