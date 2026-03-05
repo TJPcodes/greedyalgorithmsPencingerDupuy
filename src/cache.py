@@ -3,6 +3,8 @@ from collections import deque, OrderedDict
 
 
 def simulate_fifo(k, requests):
+    if k <= 0:
+        return len(requests)
 
     cache = set()
     queue = deque()
@@ -28,6 +30,8 @@ def simulate_fifo(k, requests):
 
 
 def simulate_lru(k, requests):
+    if k <= 0:
+        return len(requests)
     
     cache = OrderedDict()
     misses = 0
@@ -47,15 +51,11 @@ def simulate_lru(k, requests):
 
 
 def simulate_optff(k, requests):
+    if k <= 0:
+        return len(requests)
    
-
-    # TODO (DOM): Implement this function.
-    # Build a lookup: for each position i, next_use[i] = next index where requests[i] appears
-    # (or infinity if it never appears again)
-
     n = len(requests)
 
-   
     next_use = [float('inf')] * n
     last_seen = {}
     for i in range(n - 1, -1, -1):
@@ -64,21 +64,18 @@ def simulate_optff(k, requests):
             next_use[i] = last_seen[r]
         last_seen[r] = i
 
-    cache = {} 
+    cache = {}
     misses = 0
 
     for i, req in enumerate(requests):
         if req in cache:
-            
             cache[req] = next_use[i]
         else:
             misses += 1
-            
             nu = next_use[i]
             if len(cache) < k:
                 cache[req] = nu
             else:
-            
                 evict = max(cache, key=lambda x: cache[x])
                 del cache[evict]
                 cache[req] = nu
@@ -94,7 +91,7 @@ def main():
     with open(sys.argv[1]) as f:
         first_line = f.readline().split()
         k, m = int(first_line[0]), int(first_line[1])
-        requests = list(map(int, f.readline().split()))
+        requests = list(map(int, f.read().split()))
 
     assert len(requests) == m, f"Expected {m} requests, got {len(requests)}"
 
