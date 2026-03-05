@@ -74,8 +74,16 @@ r1 r2 r3 ... rm
 
 ## Written Component
 
-*(Dom)*
 
 ### Question 1: Empirical Comparison
+
+| Input File | k | m  | FIFO | LRU | OPTFF |
+|------------|---|----|------|-----|-------|
+| input1.in  | 3 | 20 | 17   | 18  | 10    |
+| input2.in  | 3 | 60 | 60   | 60  | 38    |
+| input3.in  | 4 | 50 | 21   | 21  | 15    |
+
+OPTFF has the fewest misses in all three cases since it has full knowledge of future requests, and it always evicts the optimal item. FIFO and LRU perform in a similar way, with neither consistently outperforming the other one across all the inputs.
+
 ### Question 2: Bad Sequence for LRU or FIFO
 ### Question 3: Proof that OPTFF is Optimal
