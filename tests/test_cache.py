@@ -53,7 +53,7 @@ def test_lru_basic_eviction():
     # 3 miss {2,3}  evict 1 (LRU)
     # 2 hit  {3,2}
     # 1 miss {2,1}  evict 3 (LRU)
-    assert simulate_lru(2, [1, 2, 3, 2, 1]) == 3
+    assert simulate_lru(2, [1, 2, 3, 2, 1]) == 4
 
 def test_lru_recency_resets_on_access():
     """LRU DOES reset recency on re-access — unlike FIFO."""

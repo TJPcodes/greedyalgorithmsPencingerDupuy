@@ -1,6 +1,11 @@
 # Additional Edge/Robustness Tests
 
-import pytest
+import os
+import sys
+
+sys.path.insert(0, os.path.join(os.path.dirname(__file__), "..", "src"))
+
+from cache import simulate_fifo, simulate_lru, simulate_optff
 
 # --- Common edge cases ---
 
@@ -22,7 +27,6 @@ def test_large_cache_no_evictions_all_policies():
     assert simulate_fifo(k, req) == 5
     assert simulate_lru(k, req) == 5
     assert simulate_optff(k, req) == 5
-)
 
 # --- FIFO specific ---
 
@@ -70,9 +74,9 @@ def test_optff_evict_never_used_again():
     Optimal evicts 2 (used at end) or 1 depending on future:
       future after inserting 3: sequence is 1,2.
       So evict 2? Actually 1 is used sooner than 2, so evict 2 (farthest).
-    misses: 1,2,3 = 3
+    misses: 1,2,3,2 = 4
     """
-    assert simulate_optff(2, [1, 2, 3, 1, 2]) == 3
+    assert simulate_optff(2, [1, 2, 3, 1, 2]) == 4
 
 def test_optff_strictly_better_than_fifo_on_classic_sequence():
     """
